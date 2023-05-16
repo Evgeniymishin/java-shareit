@@ -4,15 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static ru.practicum.shareit.user.UserMapper.toUserDto;
 
@@ -20,20 +22,22 @@ import static ru.practicum.shareit.user.UserMapper.toUserDto;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> getAll() {
         List<UserDto> users = new ArrayList<>();
-        for (User user : userStorage.getAll()) {
+        for (User user : userRepository.findAll()) {
             users.add(toUserDto(user));
         }
         return users;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDto getById(Long id) {
-        User user = userStorage.getById(id).orElseThrow(() ->
+        User user = userRepository.findById(id).orElseThrow(() ->
             new NotFoundException("Не найден пользователь с id: " + id)
         );
         return toUserDto(user);
@@ -49,41 +53,36 @@ public class UserServiceImpl implements UserService {
         if (user.getEmail() == null) {
             throw new ValidationException("Отсутствует email");
         }
-        for (User currentUser : userStorage.getAll()) {
+        for (User currentUser : userRepository.findAll()) {
             if (user.getEmail().equals(currentUser.getEmail())) {
                 throw new ConflictException("Пользователь с таким email уже зарегистрирован");
             }
         }
     }
 
-
+    @Transactional
     @Override
     public UserDto create(User user) {
-        validateUserEmail(user);
-        return toUserDto(userStorage.create(user));
+        return toUserDto(userRepository.save(user));
     }
 
+    @Transactional
     @Override
     public UserDto update(User user, Long id) {
-        validateUser(id);
-        User currentUser = userStorage.getById(id)
+        User currentUser = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь с id: " + id));
-        if (user.getEmail() != null && !currentUser.getEmail().equals(user.getEmail())) {
-            validateUserEmail(user);
-            currentUser.setEmail(user.getEmail());
-        }
-        if (user.getName() != null) {
-            currentUser.setName(user.getName());
-        }
+        Optional.ofNullable(user.getEmail()).ifPresent(currentUser::setEmail);
+        Optional.ofNullable(user.getName()).ifPresent(currentUser::setName);
 
-        return toUserDto(userStorage.update(currentUser));
+        return toUserDto(userRepository.save(currentUser));
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         validateUser(id);
         getById(id);
-        userStorage.delete(id);
+        userRepository.deleteById(id);
     }
 
 
