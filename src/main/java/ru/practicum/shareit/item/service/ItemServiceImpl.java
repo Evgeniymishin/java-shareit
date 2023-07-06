@@ -3,7 +3,10 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -12,7 +15,10 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.booking.BookingMapper.toBookingShortDto;
 import static ru.practicum.shareit.item.ItemMapper.toItem;
 import static ru.practicum.shareit.item.ItemMapper.toItemDto;
 
@@ -21,26 +27,41 @@ import static ru.practicum.shareit.item.ItemMapper.toItemDto;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getAll(Long userId) {
-        List<ItemDto> items = new ArrayList<>();
-        for (Item item : itemRepository.findAll()) {
-            if (item.getOwner().getId().equals(userId)) {
-                items.add(toItemDto(item));
-            }
-        }
-        return items;
+        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        List<ItemDto> itemDtoList = items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        itemDtoList.forEach(itemDto -> {
+            itemDto.setLastBooking(bookingRepository.findAllByItemIdOrderByStartAsc(itemDto.getId()).isEmpty() ?
+                    null : toBookingShortDto(bookingRepository.findAllByItemIdOrderByStartAsc(itemDto.getId()).get(0)));
+            itemDto.setNextBooking(itemDto.getLastBooking() == null ?
+                    null : toBookingShortDto(bookingRepository.findAllByItemIdOrderByStartDesc(itemDto.getId()).get(0)));
+        });
+
+
+        return itemDtoList;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public ItemDto getById(Long id) {
+    public ItemDto getById(Long id, Long ownerId) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Не найдена вещь с id: " + id));
-
+        ItemDto itemDto = toItemDto(item);
+        if (item.getOwner().getId().equals(ownerId)) {
+            itemDto.setLastBooking(bookingRepository.findAllByItemIdOrderByStartAsc(id).isEmpty() ? null :
+                    toBookingShortDto(bookingRepository.findAllByItemIdOrderByStartAsc(id).get(0)));
+            itemDto.setNextBooking(itemDto.getLastBooking() == null ?
+                    null : toBookingShortDto(bookingRepository.findAllByItemIdOrderByStartDesc(itemDto.getId())
+                    .get(0)));
+        }
         return toItemDto(item);
     }
 
+    @Transactional
     @Override
     public ItemDto create(ItemDto itemDto, Long userId) {
         User user = userRepository.findById(userId)
@@ -52,6 +73,7 @@ public class ItemServiceImpl implements ItemService {
         return toItemDto(item);
     }
 
+    @Transactional
     @Override
     public ItemDto update(ItemDto itemDto, Long id, Long userId) {
         Item item = itemRepository.findById(id)
@@ -59,24 +81,19 @@ public class ItemServiceImpl implements ItemService {
         if (!item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Ошибка обновления вещи: у пользователя " + userId + "нет такой вещи");
         }
-        if (itemDto.getName() != null) {
-            item.setName(itemDto.getName());
-        }
-        if (itemDto.getDescription() != null) {
-            item.setDescription(itemDto.getDescription());
-        }
-        if (itemDto.getAvailable() != null) {
-            item.setAvailable(itemDto.getAvailable());
-        }
+        Optional.ofNullable(itemDto.getName()).ifPresent(item::setName);
+        Optional.ofNullable(itemDto.getDescription()).ifPresent(item::setDescription);
+        Optional.ofNullable(itemDto.getAvailable()).ifPresent(item::setAvailable);
         return toItemDto(itemRepository.save(item));
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
-        getById(id);
         itemRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> search(String text) {
         List<ItemDto> searchedItems = new ArrayList<>();
