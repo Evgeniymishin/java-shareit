@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnknownStateException;
@@ -19,7 +19,6 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +92,7 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingDtoList = new ArrayList<>();
         switch (state) {
             case "ALL":
-                bookingDtoList.addAll(bookingRepository.findAllByItemOwner(user,sort));
+                bookingDtoList.addAll(bookingRepository.findAllByItemOwner(user, sort));
                 break;
             case "CURRENT":
                 bookingDtoList.addAll(bookingRepository.findAllByItemOwnerAndStartBeforeAndEndAfter(user,
@@ -127,7 +126,7 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingDtoList = new ArrayList<>();
         switch (state) {
             case "ALL":
-                bookingDtoList.addAll(bookingRepository.findAllByBooker(user,sort));
+                bookingDtoList.addAll(bookingRepository.findAllByBooker(user, sort));
                 break;
             case "CURRENT":
                 bookingDtoList.addAll(bookingRepository.findAllByBookerAndStartBeforeAndEndAfter(user,

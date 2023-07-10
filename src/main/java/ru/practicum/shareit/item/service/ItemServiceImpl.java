@@ -4,6 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.comment.CommentMapper;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.comment.model.Comment;
+import ru.practicum.shareit.comment.repository.CommentRepository;
+import ru.practicum.shareit.enums.Status;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
@@ -13,11 +19,14 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.comment.CommentMapper.toComment;
+import static ru.practicum.shareit.comment.CommentMapper.toCommentDto;
 import static ru.practicum.shareit.booking.BookingMapper.toBookingShortDto;
 import static ru.practicum.shareit.item.ItemMapper.toItem;
 import static ru.practicum.shareit.item.ItemMapper.toItemDto;
@@ -28,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -35,10 +45,12 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
         List<ItemDto> itemDtoList = items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
         itemDtoList.forEach(itemDto -> {
-            itemDto.setLastBooking(bookingRepository.findAllByItemIdOrderByStartAsc(itemDto.getId()).isEmpty() ?
-                    null : toBookingShortDto(bookingRepository.findAllByItemIdOrderByStartAsc(itemDto.getId()).get(0)));
+            itemDto.setLastBooking(bookingRepository.findAllByItemIdAndStatusEqualsOrderByStartAsc(itemDto.getId(), Status.APPROVED).isEmpty() ?
+                    null : toBookingShortDto(bookingRepository.findAllByItemIdAndStatusEqualsOrderByStartAsc(itemDto.getId(), Status.APPROVED).get(0)));
             itemDto.setNextBooking(itemDto.getLastBooking() == null ?
-                    null : toBookingShortDto(bookingRepository.findAllByItemIdOrderByStartDesc(itemDto.getId()).get(0)));
+                    null : toBookingShortDto(bookingRepository.findAllByItemIdAndStatusEqualsOrderByStartDesc(itemDto.getId(), Status.APPROVED).get(0)));
+            itemDto.setComments(commentRepository.findAllByItemId(itemDto.getId())
+                    .stream().map(CommentMapper::toCommentDto).collect(Collectors.toList()));
         });
 
 
@@ -51,14 +63,16 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Не найдена вещь с id: " + id));
         ItemDto itemDto = toItemDto(item);
+        itemDto.setComments(commentRepository.findAllByItemId(id)
+                .stream().map(CommentMapper::toCommentDto).collect(Collectors.toList()));
         if (item.getOwner().getId().equals(ownerId)) {
-            itemDto.setLastBooking(bookingRepository.findAllByItemIdOrderByStartAsc(id).isEmpty() ? null :
-                    toBookingShortDto(bookingRepository.findAllByItemIdOrderByStartAsc(id).get(0)));
+            itemDto.setLastBooking(bookingRepository.findAllByItemIdAndStatusEqualsOrderByStartAsc(id, Status.APPROVED).isEmpty() ? null :
+                    toBookingShortDto(bookingRepository.findAllByItemIdAndStatusEqualsOrderByStartAsc(id, Status.APPROVED).get(0)));
             itemDto.setNextBooking(itemDto.getLastBooking() == null ?
-                    null : toBookingShortDto(bookingRepository.findAllByItemIdOrderByStartDesc(itemDto.getId())
+                    null : toBookingShortDto(bookingRepository.findAllByItemIdAndStatusEqualsOrderByStartDesc(itemDto.getId(), Status.APPROVED)
                     .get(0)));
         }
-        return toItemDto(item);
+        return itemDto;
     }
 
     @Transactional
@@ -109,4 +123,25 @@ public class ItemServiceImpl implements ItemService {
         return searchedItems;
 
     }
+
+    @Transactional
+    @Override
+    public CommentDto createComment(Long itemId, Long userId, CommentDto commentDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id " + userId));
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Не существует вещь с id " + itemId));
+        if (bookingRepository.findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(userId, itemId, Status.APPROVED,
+                LocalDateTime.now()).isEmpty()) {
+            throw new ValidationException("Ошибка: Некорректный статус");
+        }
+        Comment comment = toComment(commentDto);
+        comment.setItem(item);
+        comment.setAuthor(user);
+        comment.setCreated(LocalDateTime.now());
+        commentRepository.save(comment);
+
+        return toCommentDto(comment);
+    }
+
 }

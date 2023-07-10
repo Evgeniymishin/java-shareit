@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
-            new NotFoundException("Не найден пользователь с id: " + id)
+                new NotFoundException("Не найден пользователь с id: " + id)
         );
         return toUserDto(user);
     }
