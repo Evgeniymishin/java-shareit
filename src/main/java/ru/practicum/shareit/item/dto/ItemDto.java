@@ -25,4 +25,8 @@ public class ItemDto {
     private BookingShortDto lastBooking;
     private BookingShortDto nextBooking;
     private List<CommentDto> comments;
+
+    public void createComment(CommentDto commentDto) {
+        comments.add(commentDto);
+    }
 }
