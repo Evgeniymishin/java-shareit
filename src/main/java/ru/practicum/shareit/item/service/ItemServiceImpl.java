@@ -22,10 +22,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.ItemMapper.toItem;
@@ -61,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException("Не найдена вещь с id: " + id));
         if (!userRepository.existsById(ownerId)) throw new NotFoundException("Не найдена пользователь с id: " + id);
         ItemDto itemDto = ItemMapper.toItemDto(item);
-        if (ownerId == item.getOwner().getId()) {
+        if (Objects.equals(ownerId, item.getOwner().getId())) {
             LocalDateTime now = LocalDateTime.now();
             List<Booking> bookings = bookingRepository.getPreviousAndNextBookings(List.of(id), now);
             for (Booking booking : bookings) {
