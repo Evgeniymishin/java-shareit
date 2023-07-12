@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "start_date", nullable = false)
     private LocalDateTime start;

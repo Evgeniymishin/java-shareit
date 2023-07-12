@@ -4,7 +4,10 @@ import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
-public class BookingMapper {
+public final class BookingMapper {
+    private BookingMapper() {
+    }
+
     public static BookingDto toBookingDto(Booking booking) {
         return BookingDto.builder()
                 .id(booking.getId())

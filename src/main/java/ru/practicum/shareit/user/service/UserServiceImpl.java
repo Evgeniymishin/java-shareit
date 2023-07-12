@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -46,17 +44,6 @@ public class UserServiceImpl implements UserService {
     public void validateUser(Long id) {
         if (getById(id) == null) {
             throw new NotFoundException("Такого пользователя нет");
-        }
-    }
-
-    private void validateUserEmail(User user) {
-        if (user.getEmail() == null) {
-            throw new ValidationException("Отсутствует email");
-        }
-        for (User currentUser : userRepository.findAll()) {
-            if (user.getEmail().equals(currentUser.getEmail())) {
-                throw new ConflictException("Пользователь с таким email уже зарегистрирован");
-            }
         }
     }
 

@@ -56,7 +56,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getById(Long id, Long ownerId) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException("Не найдена вещь с id: " + id));
-        if (!userRepository.existsById(ownerId)) throw new NotFoundException("Не найдена пользователь с id: " + id);
+        if (!userRepository.existsById(ownerId)) {
+            throw new NotFoundException("Не найдена пользователь с id: " + id);
+        }
         ItemDto itemDto = ItemMapper.toItemDto(item);
         if (Objects.equals(ownerId, item.getOwner().getId())) {
             LocalDateTime now = LocalDateTime.now();
@@ -112,8 +114,8 @@ public class ItemServiceImpl implements ItemService {
             return searchedItems;
         }
         for (Item item : itemRepository.findAll()) {
-            if (item.getName().toLowerCase().contains(text.toLowerCase()) ||
-                    item.getDescription().toLowerCase().contains(text.toLowerCase()) && item.getAvailable()) {
+            if ((item.getName().toLowerCase().contains(text.toLowerCase(Locale.getDefault())) ||
+                    item.getDescription().toLowerCase().contains(text.toLowerCase())) && item.getAvailable()) {
                 searchedItems.add(toItemDto(item));
             }
         }

@@ -5,7 +5,10 @@ import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
 
-public class ItemMapper {
+public final class ItemMapper {
+    private ItemMapper() {
+    }
+
     public static ItemDto toItemDto(Item item) {
         return ItemDto.builder()
                 .id(item.getId())

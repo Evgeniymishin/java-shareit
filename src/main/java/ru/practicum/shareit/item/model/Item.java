@@ -29,7 +29,7 @@ public class Item {
     @Column(name = "is_available")
     private Boolean available;
     @ManyToOne
-    @JoinColumn(name = "id_owner", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private User owner;
     @ManyToOne
     @JoinColumn(name = "request_id", referencedColumnName = "id")
