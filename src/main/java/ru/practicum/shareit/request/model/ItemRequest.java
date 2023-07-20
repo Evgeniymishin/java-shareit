@@ -1,13 +1,16 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.shareit.user.model.User;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "requests")
 @Data
 public class ItemRequest {
@@ -17,8 +20,7 @@ public class ItemRequest {
     @NotBlank
     @Column(nullable = false)
     private String description;
-    @ManyToOne
-    @JoinColumn(name = "requestor_id", referencedColumnName = "id")
-    private User requestor;
-    private LocalDate created;
+    @JoinColumn(name = "requestor_id")
+    private Long requestorId;
+    private LocalDateTime created;
 }

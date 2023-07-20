@@ -15,7 +15,7 @@ public final class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .request(item.getRequest() != null ? item.getRequest() : null)
+                .requestId(item.getRequestId() != null ? item.getRequestId() : null)
                 .comments(new ArrayList<>())
                 .build();
     }
@@ -26,7 +26,7 @@ public final class ItemMapper {
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
-                .request(itemDto.getRequest())
+                .requestId(itemDto.getRequestId())
                 .build();
     }
 }
