@@ -11,22 +11,22 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
-    private final ItemRequestServiceImpl ItemRequestService;
+    private final ItemRequestServiceImpl service;
 
-    public ItemRequestController(ItemRequestServiceImpl ItemRequestService) {
-        this.ItemRequestService = ItemRequestService;
+    public ItemRequestController(ItemRequestServiceImpl service) {
+        this.service = service;
     }
 
     @PostMapping
     ItemRequestDto create(@Valid @RequestBody ItemRequestDto itemRequestDto,
                           @RequestHeader("X-Sharer-User-Id") long userId) {
-        return ItemRequestService.create(itemRequestDto, userId);
+        return service.create(itemRequestDto, userId);
     }
 
     @GetMapping("/{requestId}")
     ItemRequestDto get(@RequestHeader("X-Sharer-User-Id") long userId,
                        @PathVariable long requestId) {
-        return ItemRequestService.get(userId, requestId);
+        return service.get(userId, requestId);
     }
 
     @GetMapping("/all")
@@ -36,11 +36,11 @@ public class ItemRequestController {
         if (from < 0 || size <= 0) {
             throw new ValidationException("Неккоректные параметры запроса");
         }
-        return ItemRequestService.getAll(userId, from, size);
+        return service.getAll(userId, from, size);
     }
 
     @GetMapping()
     List<ItemRequestDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return ItemRequestService.getAllByOwner(userId);
+        return service.getAllByOwner(userId);
     }
 }
