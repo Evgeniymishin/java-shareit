@@ -18,8 +18,8 @@ public class ItemRequestController {
     }
 
     @PostMapping
-    ItemRequestDto create(@Valid @RequestBody ItemRequestDto itemRequestDto,
-                          @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ItemRequestDto create(@Valid @RequestBody ItemRequestDto itemRequestDto,
+                                 @RequestHeader("X-Sharer-User-Id") long userId) {
         return service.create(itemRequestDto, userId);
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class ItemDto {
     private Long id;
     @NotBlank

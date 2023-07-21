@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static ru.practicum.shareit.user.UserMapper.toUser;
 import static ru.practicum.shareit.user.UserMapper.toUserDto;
 
 @Slf4j
@@ -49,17 +50,18 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto create(User user) {
+    public UserDto create(UserDto userDto) {
+        User user = toUser(userDto);
         return toUserDto(userRepository.save(user));
     }
 
     @Transactional
     @Override
-    public UserDto update(User user, Long id) {
+    public UserDto update(UserDto userDto, Long id) {
         User currentUser = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь с id: " + id));
-        Optional.ofNullable(user.getEmail()).ifPresent(currentUser::setEmail);
-        Optional.ofNullable(user.getName()).ifPresent(currentUser::setName);
+        Optional.ofNullable(userDto.getEmail()).ifPresent(currentUser::setEmail);
+        Optional.ofNullable(userDto.getName()).ifPresent(currentUser::setName);
 
         return toUserDto(userRepository.save(currentUser));
     }
