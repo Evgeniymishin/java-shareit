@@ -44,7 +44,7 @@ class ItemRequestControllerMVCTests {
     }
 
     @Test
-    void createTest() throws Exception {
+    void testCreate() throws Exception {
         when(itemRequestService.create(any(), anyLong()))
                 .thenReturn(itemRequestDto);
         mvc.perform(post("/requests")
@@ -58,7 +58,7 @@ class ItemRequestControllerMVCTests {
     }
 
     @Test
-    void getAllByUserTest() throws Exception {
+    void testGetAllByUser() throws Exception {
         when(itemRequestService.getAllByOwner(anyLong()))
                 .thenReturn(List.of(itemRequestDto));
         mvc.perform(get("/requests")
@@ -71,7 +71,7 @@ class ItemRequestControllerMVCTests {
     }
 
     @Test
-    void getAllTest() throws Exception {
+    void testGetAll() throws Exception {
         when(itemRequestService.getAll(anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(itemRequestDto));
         mvc.perform(get("/requests/all")
@@ -84,7 +84,7 @@ class ItemRequestControllerMVCTests {
     }
 
     @Test
-    void getByIdTest() throws Exception {
+    void testGetById() throws Exception {
         when(itemRequestService.get(anyLong(), anyLong()))
                 .thenReturn(itemRequestDto);
         mvc.perform(get("/requests/1")

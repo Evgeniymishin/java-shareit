@@ -67,17 +67,8 @@ class BookingRepositoryTests {
                 .build();
     }
 
-//    @Test
-//    void findAllByItemIdOrderByStartAscTest() {
-//        userRepository.save(user);
-//        itemRepository.save(item);
-//        userRepository.save(user2);
-//        bookingRepository.save(booking);
-//        assertThat(bookingRepository.findAllByItemIdOrderByStartAsc(item.getId()).size(), equalTo(1));
-//    }
-
     @Test
-    void findAllByBookerTest() {
+    void testFindAllByBooker() {
         userRepository.save(user);
         itemRepository.save(item);
         userRepository.save(user2);
@@ -85,31 +76,8 @@ class BookingRepositoryTests {
         assertThat(bookingRepository.findAllByBooker(user2, Pageable.ofSize(10)).stream().count(), equalTo(1L));
     }
 
-//    @Test
-//    void findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBeforeTest() {
-//        userRepository.save(user);
-//        itemRepository.save(item);
-//        userRepository.save(user2);
-//        booking.setStatus(Status.APPROVED);
-//        bookingRepository.save(booking);
-//        assertThat(bookingRepository.findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(user2.getId(),
-//                        item.getId(), Status.APPROVED, LocalDateTime.of(2023, 3, 10, 10, 10)).size(),
-//                equalTo(1));
-//    }
-
-//    @Test
-//    void findAllByBookerAndStartBeforeAndEndAfterTest() {
-//        userRepository.save(user);
-//        itemRepository.save(item);
-//        userRepository.save(user2);
-//        bookingRepository.save(booking);
-//        assertThat(bookingRepository.findAllByBookerAndStartBeforeAndEndAfter(user2,
-//                LocalDateTime.of(2023, 2, 1, 10, 10), LocalDateTime.now(),
-//                Pageable.ofSize(10)).stream().count(), equalTo(1L));
-//    }
-
     @Test
-    void findAllByItemOwnerAndEndBeforeTest() {
+    void testFindAllByItemOwnerAndEndBefore() {
         userRepository.save(user);
         itemRepository.save(item);
         userRepository.save(user2);
@@ -119,18 +87,8 @@ class BookingRepositoryTests {
                 Pageable.ofSize(10)).stream().count(), equalTo(1L));
     }
 
-//    @Test
-//    void findAllByItemOwnerAndStartAfterTest() {
-//        userRepository.save(user);
-//        itemRepository.save(item);
-//        userRepository.save(user2);
-//        bookingRepository.save(booking);
-//        assertThat(bookingRepository.findAllByItemOwnerAndStartAfter(user,
-//                LocalDateTime.now(), Pageable.ofSize(10)).stream().count(), equalTo(1L));
-//    }
-
     @Test
-    void findAllByItemOwnerAndStatusEqualsTest() {
+    void testFindAllByItemOwnerAndStatusEquals() {
         userRepository.save(user);
         itemRepository.save(item);
         userRepository.save(user2);

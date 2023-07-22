@@ -48,7 +48,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
     @Override
     public UserDto create(UserDto userDto) {
         User user = toUser(userDto);

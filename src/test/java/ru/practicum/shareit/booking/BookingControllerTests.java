@@ -65,52 +65,52 @@ class BookingControllerTests {
     }
 
     @Test
-    void createTest() {
+    void testCreate() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(user.getId(), itemDto);
         UserDto user1 = userController.create(userDto1);
         BookingDto booking = bookingController.create(bookingShortDto, user1.getId());
-        assertEquals(1L, bookingController.getById(booking.getId(), user1.getId()).getId());
+        assertEquals(1L, bookingController.getById(booking.getId(), user1.getId()).getId(), "Ошибка создании брони");
     }
 
     @Test
-    void createWrongUserTest() {
-        assertThrows(NotFoundException.class, () -> bookingController.create(bookingShortDto, 1L));
+    void testCreateWrongUser() {
+        assertThrows(NotFoundException.class, () -> bookingController.create(bookingShortDto, 1L), "Не сработало исключение");
     }
 
     @Test
-    void createWrongItemTest() {
+    void testCreateWrongItem() {
         UserDto user = userController.create(userDto);
-        assertThrows(NotFoundException.class, () -> bookingController.create(bookingShortDto, 1L));
+        assertThrows(NotFoundException.class, () -> bookingController.create(bookingShortDto, 1L), "Не сработало исключение");
     }
 
     @Test
-    void createOwnerTest() {
+    void testCreateOwner() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(user.getId(), itemDto);
-        assertThrows(NotFoundException.class, () -> bookingController.create(bookingShortDto, 1L));
+        assertThrows(NotFoundException.class, () -> bookingController.create(bookingShortDto, 1L), "Не сработало исключение");
     }
 
     @Test
-    void createToUnavailableItemTest() {
+    void testCreateToUnavailableItem() {
         UserDto user = userController.create(userDto);
         itemDto.setAvailable(false);
         ItemDto item = itemController.create(user.getId(), itemDto);
         UserDto user1 = userController.create(userDto1);
-        assertThrows(ValidationException.class, () -> bookingController.create(bookingShortDto, 2L));
+        assertThrows(ValidationException.class, () -> bookingController.create(bookingShortDto, 2L), "Не сработало исключение");
     }
 
     @Test
-    void createWithWrongEndDate() {
+    void testCreateWithWrongEndDate() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(user.getId(), itemDto);
         UserDto user1 = userController.create(userDto1);
         bookingShortDto.setEnd(LocalDateTime.of(2022, 9, 24, 12, 30));
-        assertThrows(ValidationException.class, () -> bookingController.create(bookingShortDto, user1.getId()));
+        assertThrows(ValidationException.class, () -> bookingController.create(bookingShortDto, user1.getId()), "Не сработало исключение");
     }
 
     @Test
-    void approveTest() {
+    void testApprove() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(user.getId(), itemDto);
         UserDto user1 = userController.create(userDto1);
@@ -118,37 +118,37 @@ class BookingControllerTests {
                 .start(LocalDateTime.of(2022, 10, 24, 12, 30))
                 .end(LocalDateTime.of(2022, 11, 10, 13, 0))
                 .itemId(item.getId()).build(), user1.getId());
-        assertEquals(Status.WAITING, bookingController.getById(booking.getId(), user1.getId()).getStatus());
+        assertEquals(Status.WAITING, bookingController.getById(booking.getId(), user1.getId()).getStatus(), "Ошибочный статус брони");
         bookingController.approve(booking.getId(), user.getId(), true);
-        assertEquals(Status.APPROVED, bookingController.getById(booking.getId(), user1.getId()).getStatus());
+        assertEquals(Status.APPROVED, bookingController.getById(booking.getId(), user1.getId()).getStatus(), "Ошибочный статус брони");
     }
 
     @Test
-    void approveToWrongBookingTest() {
-        assertThrows(NotFoundException.class, () -> bookingController.approve(1L, 1L, true));
+    void testApproveToWrongBooking() {
+        assertThrows(NotFoundException.class, () -> bookingController.approve(1L, 1L, true), "Не сработало исключение");
     }
 
     @Test
-    void approveWrongUserTest() {
+    void testApproveWrongUser() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(user.getId(), itemDto);
         UserDto user1 = userController.create(userDto1);
         BookingDto booking = bookingController.create(bookingShortDto, user1.getId());
-        assertThrows(NotFoundException.class, () -> bookingController.approve(1L, 2L, true));
+        assertThrows(NotFoundException.class, () -> bookingController.approve(1L, 2L, true), "Не сработало исключение");
     }
 
     @Test
-    void approveToBookingWithWrongStatus() {
+    void testApproveToBookingWithWrongStatus() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(user.getId(), itemDto);
         UserDto user1 = userController.create(userDto1);
         BookingDto booking = bookingController.create(bookingShortDto, user1.getId());
         bookingController.approve(1L, 1L, true);
-        assertThrows(ValidationException.class, () -> bookingController.approve(1L, 1L, true));
+        assertThrows(ValidationException.class, () -> bookingController.approve(1L, 1L, true), "Не сработало исключение");
     }
 
     @Test
-    void getAllByUserTest() {
+    void testGetAllByUser() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(user.getId(), itemDto);
         UserDto user1 = userController.create(userDto1);
@@ -169,22 +169,22 @@ class BookingControllerTests {
     }
 
     @Test
-    void getAllByWrongUserTest() {
-        assertThrows(NotFoundException.class, () -> bookingController.getAllByUser(1L, "ALL", 0, 10));
-        assertThrows(NotFoundException.class, () -> bookingController.getAllByOwner(1L, "ALL", 0, 10));
+    void testGetAllByWrongUser() {
+        assertThrows(NotFoundException.class, () -> bookingController.getAllByUser(1L, "ALL", 0, 10), "Не сработало исключение");
+        assertThrows(NotFoundException.class, () -> bookingController.getAllByOwner(1L, "ALL", 0, 10), "Не сработало исключение");
     }
 
     @Test
-    void getByWrongIdTest() {
-        assertThrows(NotFoundException.class, () -> bookingController.getById(1L, 1L));
+    void testGetByWrongId() {
+        assertThrows(NotFoundException.class, () -> bookingController.getById(1L, 1L), "Не сработало исключение");
     }
 
     @Test
-    void getByWrongUser() {
+    void testGetByWrongUser() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(user.getId(), itemDto);
         UserDto user1 = userController.create(userDto1);
         BookingDto booking = bookingController.create(bookingShortDto, user1.getId());
-        assertThrows(NotFoundException.class, () -> bookingController.getById(1L, 10L));
+        assertThrows(NotFoundException.class, () -> bookingController.getById(1L, 10L), "Не сработало исключение");
     }
 }

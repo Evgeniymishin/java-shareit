@@ -54,7 +54,7 @@ class ItemControllerMVCTests {
     }
 
     @Test
-    void getAllTest() throws Exception {
+    void testGetAll() throws Exception {
         when(itemService.getAll(anyLong()))
                 .thenReturn(List.of(itemDto));
         mvc.perform(get("/items")
@@ -67,7 +67,7 @@ class ItemControllerMVCTests {
     }
 
     @Test
-    void getByIdTest() throws Exception {
+    void testGetById() throws Exception {
         when(itemService.getById(anyLong(), anyLong()))
                 .thenReturn(itemDto);
         mvc.perform(get("/items/1")
@@ -80,7 +80,7 @@ class ItemControllerMVCTests {
     }
 
     @Test
-    void createTest() throws Exception {
+    void testCreate() throws Exception {
         when(itemService.create(any(), anyLong()))
                 .thenReturn(itemDto);
         mvc.perform(post("/items")
@@ -94,7 +94,7 @@ class ItemControllerMVCTests {
     }
 
     @Test
-    void updateTest() throws Exception {
+    void testUpdate() throws Exception {
         when(itemService.update(any(), anyLong(), anyLong()))
                 .thenReturn(itemDto);
         mvc.perform(patch("/items/1")
@@ -108,7 +108,7 @@ class ItemControllerMVCTests {
     }
 
     @Test
-    void searchTest() throws Exception {
+    void testSearch() throws Exception {
         when(itemService.search(anyString()))
                 .thenReturn(List.of(itemDto));
         mvc.perform(get("/items/search?text='name'")
@@ -121,7 +121,7 @@ class ItemControllerMVCTests {
     }
 
     @Test
-    void createCommentTest() throws Exception {
+    void testCreateComment() throws Exception {
         when(itemService.createComment(anyLong(), anyLong(), any()))
                 .thenReturn(commentDto);
         mvc.perform(post("/items/1/comment")

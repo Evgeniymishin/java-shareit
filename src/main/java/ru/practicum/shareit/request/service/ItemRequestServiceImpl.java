@@ -34,7 +34,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDto get(long userId, long requestId) {
-        if (!userRepository.existsById(userId)) throw new NotFoundException("Не существует пользователя с id " + userId);
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Не существует пользователя с id " + userId);
+        }
         return setItemsToRequests(Map.of(requestId, ItemRequestMapper.toDto(itemRequestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Не найден запрос с id " + requestId))))).get(0);
     }
@@ -42,7 +44,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemRequestDto> getAll(long userId, int from, int size) {
-        if (!userRepository.existsById(userId)) throw new NotFoundException("Не существует пользователя с id " + userId);
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Не существует пользователя с id " + userId);
+        }
         return setItemsToRequests(itemRequestRepository.findItemRequestsByRequestorIdNotOrderByCreatedDesc(userId, PageRequest.of(from / size, size))
                 .stream().map(ItemRequestMapper::toDto).collect(Collectors.toList()).stream().collect(Collectors.toMap(k -> k.getId(), v -> v)));
     }
@@ -50,7 +54,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemRequestDto> getAllByOwner(long userId) {
-        if (!userRepository.existsById(userId)) throw new NotFoundException("Не существует пользователя с id " + userId);
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Не существует пользователя с id " + userId);
+        }
         return setItemsToRequests(itemRequestRepository.findItemRequestByRequestorId(userId, Sort.by(Sort.Direction.DESC, "created"))
                 .stream().map(ItemRequestMapper::toDto).collect(Collectors.toList()).stream().collect(Collectors.toMap(k -> k.getId(), v -> v)));
     }

@@ -30,7 +30,7 @@ class ItemRepositoryTests {
     private ItemRequestRepository itemRequestRepository;
 
     @Test
-    void findAllByOwnerIdTest() {
+    void testFindAllByOwnerId() {
         User user = userRepository.save(User.builder().name("name").email("email@email.com").build());
         itemRepository.save(Item.builder().name("name").description("description").available(true).owner(user).build());
         List<Item> items = itemRepository.findAllByOwnerId(user.getId());
@@ -38,7 +38,7 @@ class ItemRepositoryTests {
     }
 
     @Test
-    void findAllByRequestIdTest() {
+    void testFindAllByRequestId() {
         User user = userRepository.save(User.builder().name("name").email("email@email.com").build());
         User user2 = userRepository.save(User.builder().name("name2").email("email2@email.com").build());
         ItemRequest itemRequest = itemRequestRepository.save(ItemRequest.builder().description("item request descr")

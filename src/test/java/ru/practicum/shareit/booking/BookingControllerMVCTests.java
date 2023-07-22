@@ -85,7 +85,7 @@ class BookingControllerMVCTests {
     }
 
     @Test
-    void approveTest() throws Exception {
+    void testApprove() throws Exception {
         bookingDto.setStatus(Status.APPROVED);
         when(bookingService.approve(anyLong(), anyLong(), anyBoolean()))
                 .thenReturn(bookingDto);
@@ -99,7 +99,7 @@ class BookingControllerMVCTests {
     }
 
     @Test
-    void getAllByOwnerTest() throws Exception {
+    void testGetAllByOwner() throws Exception {
         when(bookingService.getAllByOwner(anyLong(), anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
         mvc.perform(get("/bookings/owner")
@@ -112,7 +112,7 @@ class BookingControllerMVCTests {
     }
 
     @Test
-    void getAllByUserTest() throws Exception {
+    void testGetAllByUser() throws Exception {
         when(bookingService.getAllByUser(anyLong(), anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
         mvc.perform(get("/bookings")
@@ -125,7 +125,7 @@ class BookingControllerMVCTests {
     }
 
     @Test
-    void getByIdTest() throws Exception {
+    void testGetById() throws Exception {
         when(bookingService.getById(anyLong(), anyLong()))
                 .thenReturn(bookingDto);
         mvc.perform(get("/bookings/1")
@@ -138,7 +138,7 @@ class BookingControllerMVCTests {
     }
 
     @Test
-    void getAllByUserWrongStateTest() throws Exception {
+    void testGetAllByUserWrongState() throws Exception {
         when(bookingService.getAllByUser(anyLong(), anyString(), anyInt(), anyInt()))
                 .thenThrow(ValidationException.class);
         mvc.perform(get("/bookings?state=text")

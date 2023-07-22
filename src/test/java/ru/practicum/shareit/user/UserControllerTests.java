@@ -28,13 +28,13 @@ class UserControllerTests {
     }
 
     @Test
-    void createTest() {
+    void testCreate() {
         UserDto userDto = userController.create(user);
         assertEquals(userDto.getId(), userController.getById(userDto.getId()).getId());
     }
 
     @Test
-    void updateTest() {
+    void testUpdate() {
         userController.create(user);
         UserDto userDto = user.toBuilder().name("update name").email("update@email.com").build();
         userController.update(userDto, 1L);
@@ -42,20 +42,20 @@ class UserControllerTests {
     }
 
     @Test
-    void updateByWrongUserTest() {
+    void testUpdateByWrongUser() {
         assertThrows(NotFoundException.class, () -> userController.update(user, 1L));
     }
 
     @Test
-    void deleteTest() {
+    void testDelete() {
         UserDto userDto = userController.create(user);
-        assertEquals(1, userController.getAll().size());
+        assertEquals(1, userController.getAll().size(), "Ошибка создания пользователя");
         userController.delete(userDto.getId());
-        assertEquals(0, userController.getAll().size());
+        assertEquals(0, userController.getAll().size(), "Ошибка удаления пользователя");
     }
 
     @Test
-    void getByWrongIdTest() {
-        assertThrows(NotFoundException.class, () -> userController.getById(1L));
+    void testGetByWrongId() {
+        assertThrows(NotFoundException.class, () -> userController.getById(1L), "Не сработало исключение");
     }
 }

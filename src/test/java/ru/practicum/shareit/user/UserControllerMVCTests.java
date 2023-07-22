@@ -45,7 +45,7 @@ class UserControllerMVCTests {
     }
 
     @Test
-    void getAllTest() throws Exception {
+    void testGetAll() throws Exception {
         when(userService.getAll())
                 .thenReturn(List.of(userDto));
         mvc.perform(get("/users")
@@ -58,7 +58,7 @@ class UserControllerMVCTests {
     }
 
     @Test
-    void getByIdTest() throws Exception {
+    void testGetById() throws Exception {
         when(userService.getById(anyLong()))
                 .thenReturn(userDto);
         mvc.perform(get("/users/1")
@@ -71,7 +71,7 @@ class UserControllerMVCTests {
     }
 
     @Test
-    void createTest() throws Exception {
+    void testCreate() throws Exception {
         when(userService.create(any()))
                 .thenReturn(userDto);
         mvc.perform(post("/users")
@@ -85,7 +85,7 @@ class UserControllerMVCTests {
     }
 
     @Test
-    void updateTest() throws Exception {
+    void testUpdate() throws Exception {
         when(userService.update(any(), anyLong()))
                 .thenReturn(userDto);
         mvc.perform(patch("/users/1")

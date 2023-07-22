@@ -42,45 +42,45 @@ class ItemRequestControllerTests {
     }
 
     @Test
-    void createTest() {
+    void testCreate() {
         UserDto user = userController.create(userDto);
         ItemRequestDto itemRequest = itemRequestController.create(itemRequestDto, user.getId());
-        assertEquals(1L, itemRequestController.get(itemRequest.getId(), user.getId()).getId());
+        assertEquals(1L, itemRequestController.get(itemRequest.getId(), user.getId()).getId(), "Ошибка создании запроса");
     }
 
     @Test
-    void createByWrongUserTest() {
-        assertThrows(NotFoundException.class, () -> itemRequestController.create(itemRequestDto,1L));
+    void testCreateByWrongUser() {
+        assertThrows(NotFoundException.class, () -> itemRequestController.create(itemRequestDto,1L), "Не сработало исключение");
     }
 
     @Test
-    void getAllByUserTest() {
+    void testGetAllByUser() {
         UserDto user = userController.create(userDto);
         ItemRequestDto itemRequest = itemRequestController.create(itemRequestDto, user.getId());
-        assertEquals(1, itemRequestController.getAllByOwner(user.getId()).size());
+        assertEquals(1, itemRequestController.getAllByOwner(user.getId()).size(), "Ошибка получение списка запросов");
     }
 
     @Test
-    void getAllByUserWithWrongUserTest() {
-        assertThrows(NotFoundException.class, () -> itemRequestController.getAllByOwner(1L));
+    void testGetAllByUserWithWrongUser() {
+        assertThrows(NotFoundException.class, () -> itemRequestController.getAllByOwner(1L), "Не сработало исключение");
     }
 
     @Test
-    void getAll() {
+    void testGetAll() {
         UserDto user = userController.create(userDto);
         ItemRequestDto itemRequest = itemRequestController.create(itemRequestDto, user.getId());
-        assertEquals(0, itemRequestController.getAll(user.getId(), 0, 10).size());
+        assertEquals(0, itemRequestController.getAll(user.getId(), 0, 10).size(), "Ошибка получении пользователей");
         UserDto user2 = userController.create(userDto.toBuilder().email("user1@email.com").build());
-        assertEquals(1, itemRequestController.getAll(user2.getId(), 0, 10).size());
+        assertEquals(1, itemRequestController.getAll(user2.getId(), 0, 10).size(), "Ошибка получении пользователей");
     }
 
     @Test
-    void getAllByWrongUser() {
-        assertThrows(NotFoundException.class, () -> itemRequestController.getAll(1L, 0, 10));
+    void testGetAllByWrongUser() {
+        assertThrows(NotFoundException.class, () -> itemRequestController.getAll(1L, 0, 10), "Не сработало исключение");
     }
 
     @Test
-    void getAllWithWrongFrom() {
-        assertThrows(ValidationException.class, () -> itemRequestController.getAll(1L, -1, 10));
+    void testGetAllWithWrongFrom() {
+        assertThrows(ValidationException.class, () -> itemRequestController.getAll(1L, -1, 10), "Не сработало исключение");
     }
 }

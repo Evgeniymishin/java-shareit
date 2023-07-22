@@ -27,7 +27,7 @@ class ItemRequestRepositoryTests {
     private UserRepository userRepository;
 
     @Test
-    void findAllByRequestorIdOrderByCreatedAscTest() {
+    void testFindAllByRequestorIdOrderByCreatedAsc() {
         User user = userRepository.save(User.builder().name("name").email("email@email.com").build());
         itemRequestRepository.save(ItemRequest.builder().description("description").requestorId(user.getId())
                 .created(LocalDateTime.now()).build());
@@ -36,7 +36,7 @@ class ItemRequestRepositoryTests {
     }
 
     @Test
-    void findAllByRequestorNotLikeOrderByCreatedAscTest() {
+    void testFindAllByRequestorNotLikeOrderByCreatedAsc() {
         User user = userRepository.save(User.builder().name("name").email("email@email.com").build());
         itemRequestRepository.save(ItemRequest.builder().description("description").requestorId(user.getId())
                 .created(LocalDateTime.now()).build());

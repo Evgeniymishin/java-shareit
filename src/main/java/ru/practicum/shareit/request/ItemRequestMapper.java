@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class ItemRequestMapper {
+    private ItemRequestMapper() {
+
+    }
+
     public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto, User user) {
         return new ItemRequest(
                 itemRequestDto.getId(),

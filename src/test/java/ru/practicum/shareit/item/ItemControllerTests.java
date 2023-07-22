@@ -70,81 +70,81 @@ class ItemControllerTests {
     }
 
     @Test
-    void createTest() {
+    void testCreate() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(1L, itemDto);
-        assertEquals(item.getId(), itemController.getById(item.getId(), user.getId()).getId());
+        assertEquals(item.getId(), itemController.getById(item.getId(), user.getId()).getId(), "Ошибка создании вещи");
     }
 
     @Test
-    void createWithRequestTest() {
+    void testCreateWithRequestTest() {
         UserDto user = userController.create(userDto);
         ItemRequestDto itemRequest = itemRequestController.create(itemRequestDto, user.getId());
         itemDto.setRequestId(1L);
         UserDto user2 = userController.create(userDto.toBuilder().email("user2@email.com").build());
         ItemDto item = itemController.create(2L, itemDto);
-        assertEquals(item, itemController.getById(1L, 2L));
+        assertEquals(item, itemController.getById(1L, 2L), "Ошибка создании запроса");
     }
 
     @Test
-    void createByWrongUser() {
-        assertThrows(NotFoundException.class, () -> itemController.create(1L, itemDto));
+    void testCreateByWrongUser() {
+        assertThrows(NotFoundException.class, () -> itemController.create(1L, itemDto), "Не сработало исключение");
     }
 
     @Test
-    void createWithWrongItemRequest() {
+    void testCreateWithWrongItemRequest() {
         itemDto.setRequestId(10L);
         UserDto user = userController.create(userDto);
-        assertThrows(NotFoundException.class, () -> itemController.create(2L, itemDto));
+        assertThrows(NotFoundException.class, () -> itemController.create(2L, itemDto),"Не сработало исключение");
     }
 
     @Test
-    void updateTest() {
+    void testUpdate() {
         userController.create(userDto);
         itemController.create(1L, itemDto);
         ItemDto item = itemDto.toBuilder().name("new name").description("updateDescription").available(false).build();
         itemController.update(item, 1L, 1L);
-        assertEquals(item.getDescription(), itemController.getById(1L, 1L).getDescription());
+        assertEquals(item.getDescription(), itemController.getById(1L, 1L).getDescription(), "Ошибка обновления вещи");
     }
 
     @Test
-    void updateForWrongItemTest() {
-        assertThrows(NotFoundException.class, () -> itemController.update(itemDto, 1L, 1L));
+    void testUpdateForWrongItem() {
+        assertThrows(NotFoundException.class, () -> itemController.update(itemDto, 1L, 1L), "Не сработало исключение");
     }
 
     @Test
-    void updateByWrongUserTest() {
+    void testUpdateByWrongUser() {
         userController.create(userDto);
         itemController.create(1L, itemDto);
         assertThrows(NotFoundException.class, () -> itemController.update(itemDto.toBuilder()
-                .name("new name").build(), 1L, 10L));
+                .name("new name").build(), 1L, 10L), "Не сработало исключение");
     }
 
     @Test
-    void deleteTest() {
+    void testDelete() {
         userController.create(userDto);
         itemController.create(1L, itemDto);
-        assertEquals(1, itemController.getAll(1L).size());
+        assertEquals(1, itemController.getAll(1L).size(), "Ошибка удаления");
         itemController.delete(1L);
-        assertEquals(0, itemController.getAll(1L).size());
+        assertEquals(0, itemController.getAll(1L).size(), "Ошибка удаления");
     }
 
     @Test
-    void searchTest() {
+    void testSearch() {
         userController.create(userDto);
         itemController.create(1L, itemDto);
-        assertEquals(1, itemController.search("Desc").size());
+        assertEquals(1, itemController.search("Desc").size(), "Ошибка при поиске");
     }
 
     @Test
-    void searchEmptyTextTest() {
+    void testSearchEmptyText() {
         userController.create(userDto);
         itemController.create(1L, itemDto);
-        assertEquals(new ArrayList<ItemDto>(), itemController.search(""));
+        assertEquals(new ArrayList<ItemDto>(), itemController.search(""), "Ошибка при поиске");
     }
 
     @Test
-    void createCommentTest() {
+    void testCreateComment() {
         UserDto user = userController.create(userDto);
         ItemDto item = itemController.create(1L, itemDto);
         UserDto user2 = userController.create(userDto.toBuilder().email("email2@mail.com").build());
@@ -154,20 +154,20 @@ class ItemControllerTests {
                 .itemId(item.getId()).build(), user2.getId());
         bookingController.approve(1L, 1L, true);
         itemController.createComment(item.getId(), user2.getId(), comment);
-        assertEquals(1, itemController.getById(1L, 1L).getComments().size());
+        assertEquals(1, itemController.getById(1L, 1L).getComments().size(), "Ошибка при создании комментария");
     }
 
     @Test
-    void createCommentByWrongUser() {
-        assertThrows(ValidationException.class, () -> itemController.createComment(1L, 10L, comment));
+    void testCreateCommentByWrongUser() {
+        assertThrows(ValidationException.class, () -> itemController.createComment(1L, 10L, comment), "Не сработало исключение");
     }
 
     @Test
-    void createCommentToWrongItem() {
+    void testCreateCommentToWrongItem() {
         UserDto user = userController.create(userDto);
-        assertThrows(ValidationException.class, () -> itemController.createComment(1L, 1L, comment));
+        assertThrows(ValidationException.class, () -> itemController.createComment(1L, 1L, comment), "Не сработало исключение");
         ItemDto item = itemController.create(1L, itemDto);
-        assertThrows(ValidationException.class, () -> itemController.createComment(1L, 1L, comment));
+        assertThrows(ValidationException.class, () -> itemController.createComment(1L, 1L, comment), "Не сработало исключение");
     }
 
 }
